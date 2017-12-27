@@ -9,7 +9,7 @@ namespace GameOfLife
         private Grid mainGrid;
         DispatcherTimer timer;   //  Generation timer
         private int genCounter;
-        private AdWindow[] adWindow;
+        private AdWindow[] adWindow = new AdWindow[2];
 
 
         public MainWindow()
@@ -25,22 +25,16 @@ namespace GameOfLife
 
         private void StartAd()
         {
-            
+            for (int i = 0; i < 2; i++)
             {
-                adWindow = new AdWindow[2];
-                for (int i = 0; i < 2; i++)
+                if (adWindow[i] == null)
                 {
-                    if (adWindow[i] == null)
-                    {
-                        adWindow[i] = new AdWindow(this);
-                        adWindow[i].Closed += AdWindowOnClosed;
-                        adWindow[i].Top = this.Top + (330 * i) + 70;
-                        adWindow[i].Left = this.Left + 240;                        
-                        adWindow[i].Show();
-                    }
+                    adWindow[i] = new AdWindow(this);
+                    adWindow[i].Closed += AdWindowOnClosed;
+                    adWindow[i].Top = this.Top + (330 * i) + 70;
+                    adWindow[i].Left = this.Left + 240;                        
+                    adWindow[i].Show();
                 }
-                
-                
             }
         }
 
@@ -48,11 +42,12 @@ namespace GameOfLife
         {
             for (int i = 0; i < 2; i++)
             {
-                adWindow[i].Closed -= AdWindowOnClosed;
-                adWindow[i] = null;
+                // Get rid of memory leaks
+                if (sender.Equals(adWindow[i])) {
+                    adWindow[i].Closed -= AdWindowOnClosed;
+                    adWindow[i] = null;
+                }
             }
-            
-            
         }
 
 

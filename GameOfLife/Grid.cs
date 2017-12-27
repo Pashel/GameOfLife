@@ -127,7 +127,30 @@ namespace GameOfLife
 
             UpdateGraphics();
         }
-        
+
+        /// <summary>
+        /// Do all in one cycle
+        /// Change color only if it differs
+        /// </summary>
+        public void UpdateToNextGenerationOptimazed()
+        {
+            for (int i = 0; i < SizeX; i++) {
+                for (int j = 0; j < SizeY; j++) {
+                    cells[i, j].IsAlive = nextGenerationCells[i, j].IsAlive;
+                    cells[i, j].Age = nextGenerationCells[i, j].Age;
+
+
+                    var color = cells[i, j].IsAlive
+                        ? (cells[i, j].Age < 2 ? Brushes.White : Brushes.DarkGray)
+                        : Brushes.Gray;
+
+                    if (cellsVisuals[i, j].Fill != color) {
+                        cellsVisuals[i, j].Fill = color;
+                    }
+                }
+            }
+        }
+
 
         public void Update()
         {
@@ -138,14 +161,16 @@ namespace GameOfLife
             {
                 for (int j = 0; j < SizeY; j++)
                 {
-//                    nextGenerationCells[i, j] = CalculateNextGeneration(i,j);          // UNOPTIMIZED
+                    // nextGenerationCells[i, j] = CalculateNextGeneration(i,j) // UNOPTIMIZED
                     CalculateNextGeneration(i, j, ref alive, ref age);   // OPTIMIZED
                     nextGenerationCells[i, j].IsAlive = alive;  // OPTIMIZED
                     nextGenerationCells[i, j].Age = age;  // OPTIMIZED
                 }
             }
+            UpdateToNextGenerationOptimazed();
             UpdateToNextGeneration();
         }
+
 
         public Cell CalculateNextGeneration(int row, int column)    // UNOPTIMIZED
         {
